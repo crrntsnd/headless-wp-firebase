@@ -1,6 +1,7 @@
 import React from 'react';
 import WPAPI from 'wpapi';
 import Config from '../config';
+import { auth } from '../src/lib/firebase';
 
 const wp = new WPAPI({ endpoint: Config.apiUrl });
 
@@ -21,8 +22,26 @@ const PageWrapper = Comp =>
       };
     }
 
+    componentDidMount() {
+      this.unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          // User is signed in
+          this.setState({ user });
+        } else {
+          // User is signed out
+          this.setState({ user: null });
+        }
+      });
+    }
+
+    componentWillUnmount() {
+      if (this.unsubscribe) {
+        this.unsubscribe();
+      }
+    }
+
     render() {
-      return <Comp {...this.props} />;
+      return <Comp {...this.props} user={this.state?.user} />;
     }
   };
 

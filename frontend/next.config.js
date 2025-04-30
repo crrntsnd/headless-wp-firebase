@@ -2,7 +2,13 @@ const path = require('path');
 const glob = require('glob');
 
 module.exports = {
-  webpack: config => {
+  webpack: (config, { isServer }) => {
+    // Add TypeScript support
+    config.resolve.extensions.push('.ts', '.tsx');
+
+    // Add path aliases
+    config.resolve.alias['@'] = path.resolve(__dirname, 'src');
+
     config.module.rules.push(
       {
         test: /\.(css|scss)/,
